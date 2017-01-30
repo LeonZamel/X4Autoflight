@@ -8,5 +8,5 @@ while True:
         val+=1
     else:
         val = 0
-    ser.write(bytes([val]))
+    ser.write(b'200')
     time.sleep(0.1)
