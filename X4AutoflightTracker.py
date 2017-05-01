@@ -1,12 +1,41 @@
 import serial
 import time
+import cv2
+import numpy as np
+from picamera.array import PiRGBArray
+from picamera import PiCamera
 
-ser = serial.Serial('/dev/ttyACM0', 9600)
-val = 0
-while True:
-    if val < 255:
-        val+=1
-    else:
-        val = 0
-    ser.write(b'200')
-    time.sleep(0.1)
+# Establish connection to Arduino
+# ser = serial.Serial('/dev/ttyACM0', 9600)
+
+
+# Parts of image capturing code by http://www.pyimagesearch.com
+# initialize the camera and grab a reference to the raw camera capture
+camera = PiCamera()
+camera.resolution = (640, 480)
+camera.framerate = 32
+rawCapture = PiRGBArray(camera, size=(640, 480))
+ 
+# allow the camera to warmup
+time.sleep(0.1)
+ 
+# capture frames from the camera
+for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+    # grab the raw NumPy array representing the image, then initialize the timestamp
+    # and occupied/unoccupied text
+    image = frame.array
+
+
+    # analyze image for quad:
+    
+    
+
+    
+    # show the frame
+    cv2.imshow("Frame", image)
+    key = cv2.waitKey(1) & 0xFF
+    # clear the stream in preparation for the next frame
+    rawCapture.truncate(0)
+    # if the `q` key was pressed, break from the loop
+    if key == ord("q"):
+        break
