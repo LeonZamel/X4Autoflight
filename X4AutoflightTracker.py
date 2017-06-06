@@ -9,6 +9,12 @@ from picamera import PiCamera
 # ser = serial.Serial('/dev/ttyACM0', 9600)
 
 
+# BGR color boundaries for detecting colors
+colorBoundaries = {
+    "red": ([0, 0, 100], [100, 100, 255]),
+    "blue": ([100, 0, 0], [255, 100, 100])
+}
+
 # Parts of image capturing code by http://www.pyimagesearch.com
 # initialize the camera and grab a reference to the raw camera capture
 camera = PiCamera()
@@ -27,10 +33,19 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 
 
     # analyze image for quad:
+    # loop over the boundaries
+    for color in colorBoundaries:
+        # create NumPy arrays from the boundaries
+        lower = np.array(colorBoundaries[color][0], dtype="uint8")
+        upper = np.array(colorBoundaries[color][1], dtype="uint8")
     
-    
+        # find the colors within the specified boundaries and apply
+        # the mask
+        mask = cv2.inRange(image, lower, upper)
+        output = cv2.bitwise_and(image, image, mask=mask)
+        # show the images
+        cv2.imshow(color, output)
 
-    
     # show the frame
     cv2.imshow("Frame", image)
     key = cv2.waitKey(1) & 0xFF
